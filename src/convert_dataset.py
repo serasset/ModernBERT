@@ -318,6 +318,9 @@ def build_dataloader(dataset, batch_size) -> DataLoader:
         num_workers = min(64, dataset.hf_dataset.n_shards)  # type: ignore
     else:
         num_workers = 0
+        
+    # (Gilles) Force no parallel workers as the front allows for only one node
+    num_workers = 1
 
     # If using multiple workers, configure each worker to prefetch as many samples as it can, up to
     # the aggregate device batch size
