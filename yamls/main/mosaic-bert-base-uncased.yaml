@@ -3,7 +3,7 @@
 
 # Follow the instructions in the README to set up ./my-copy-c4
 # Or point data paths to your remote C4 dataset
-data_local: ./my-copy-c4
+data_local: /lustre/fsn1/projects/rech/oou/use83di/my-copy-c4
 data_remote: # If blank, files must be present in data_local
 
 max_seq_len: 128
@@ -33,13 +33,14 @@ train_loader:
   dataset:
     local: ${data_local}
     remote: ${data_remote}
-    split: train
+    split: train_small
     tokenizer_name: ${tokenizer_name}
     max_seq_len: ${max_seq_len}
     shuffle: true
     mlm_probability: ${mlm_probability}
+    streaming: false
   drop_last: true
-  num_workers: 8
+  num_workers: 4
 
 eval_loader:
   name: text
@@ -52,7 +53,7 @@ eval_loader:
     shuffle: false
     mlm_probability: 0.15 # We always evaluate at 15% masking for consistent comparison
   drop_last: false
-  num_workers: 8
+  num_workers: 4
 
 # Optimization
 scheduler:
@@ -86,9 +87,9 @@ global_eval_batch_size: 256
 device_eval_microbatch_size: 64
 
 # Logging
-progress_bar: false
-log_to_console: true
-console_log_interval: 1ba
+progress_bar: true  # changed
+log_to_console: false # changed
+console_log_interval: 10ba
 
 callbacks:
   speed_monitor:
@@ -101,15 +102,15 @@ algorithms:
     clipping_threshold: 1.0
 
 # (Optional) W&B logging
-# loggers:
-#   wandb:
-#     project:      # Fill this in
-#     entity:      # Fill this in
+loggers:
+  wandb:
+    project: modernBERT-test     # Fill this in
+    entity:      # Fill this in
 
 # (Optional) Checkpoint to local filesystem or remote object store
-# save_interval: 3500ba
-# save_num_checkpoints_to_keep: 1  # Important, this cleans up checkpoints saved to DISK
-# save_folder:      # e.g. './{run_name}/ckpt' (local) or 's3://mybucket/mydir/{run_name}/ckpt' (remote)
+save_interval: 3500ba
+save_num_checkpoints_to_keep: 1  # Important, this cleans up checkpoints saved to DISK
+save_folder:  /lustre/fsn1/projects/rech/oou/use83di/{run_name}/ckpt # e.g. './{run_name}/ckpt' (local) or 's3://mybucket/mydir/{run_name}/ckpt' (remote)
 
 # (Optional) Load from local filesystem or remote object store to
 # start from an existing model checkpoint;
